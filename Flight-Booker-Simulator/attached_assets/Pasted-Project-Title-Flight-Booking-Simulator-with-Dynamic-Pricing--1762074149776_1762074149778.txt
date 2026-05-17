@@ -1,0 +1,31 @@
+Project Title: Flight Booking Simulator with Dynamic Pricing
+________________________________________
+Project Statement:
+This project aims to develop a web-based Flight Booking Simulator that mimics real-world airline reservation systems, incorporating a dynamic pricing engine. The system allows users to search for flights, view fares that adjust based on time, seat availability, and simulated demand, and complete a multi-step booking process. This project focuses on the integration of a robust backend for managing dynamic fare calculations, seat inventory, and concurrent booking transactions. Through full-stack implementation, students will gain experience in API development, database design, pricing algorithms, and building reliable transactional systems.
+________________________________________
+Outcomes:
+• A functional flight booking simulator with a responsive web interface
+• Dynamic pricing algorithm based on simulated demand, seat inventory, and time to departure
+• Backend API for flight search, pricing, booking, and cancellation
+• Database design supporting transactional consistency and concurrent seat management
+• Generation of booking confirmations (PNRs) and downloadable receipts
+• Understanding of concurrency control and full-stack integration techniques
+________________________________________
+Modules to be Implemented:
+1.	Core Flight Search & Data Management
+ • Design schema for flights, airlines, and airports
+ • Build APIs for flight search with filtering and sorting
+2.	Dynamic Pricing Engine
+ • Implement fare calculation based on dynamic conditions
+ • Simulate seat demand and price shifts over time
+3.	Booking Workflow & Transaction Management
+ • Develop booking process with concurrency control
+ • Generate and store Passenger Name Records (PNR)
+4.	User Interface & API Integration
+ • Create frontend UI for search and booking
+ • Integrate all backend APIs and generate receipts
+________________________________________
+
+
+i need a full stack project fro this .and for frontend-html,css,javascript backend- fastapi
+database-mysql

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookMyFlight - Flight Booking Simulator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>✈️ BookMyFlight</h1>
+            <p class="subtitle">Book your flight with dynamic pricing</p>
+            <div style="text-align:right; margin-top:10px;">
+                <a id="admin-link" href="/admin" class="btn btn-secondary hidden">Admin</a>
+            </div>
+        </header>
+
+        <!-- Login Section -->
+        <section id="login-section" class="section">
+            <h2>Login / Register</h2>
+            <div class="auth-tabs">
+                <button class="tab-btn active" id="login-tab">Login</button>
+                <button class="tab-btn" id="register-tab">Register</button>
+            </div>
+            
+            <!-- Login Form -->
+            <form id="login-form" class="auth-form">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" required placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" required placeholder="Enter your password">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Login</button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="register-form" class="auth-form hidden">
+                <div class="form-group">
+                    <label for="register-name">Full Name</label>
+                    <input type="text" id="register-name" required placeholder="Enter your full name">
+                </div>
+                <div class="form-group">
+                    <label for="register-email">Email</label>
+                    <input type="email" id="register-email" required placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Password</label>
+                    <input type="password" id="register-password" required placeholder="Create a password">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Register</button>
+            </form>
+            
+            <div id="auth-message" class="message"></div>
+        </section>
+
+        <!-- Main Booking Section (hidden until login) -->
+        <section id="main-section" class="section hidden">
+            <div class="user-info">
+                <span>Welcome, <strong id="user-name"></strong></span>
+                <button class="btn btn-secondary btn-sm" id="logout-btn">Logout</button>
+            </div>
+
+            <section id="search-section" class="section">
+                <h2>Search Flights</h2>
+                <form id="search-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="origin">From</label>
+                            <select id="origin" required>
+                                <option value="">Select Origin</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="destination">To</label>
+                            <select id="destination" required>
+                                <option value="">Select Destination</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="date">Departure Date</label>
+                            <input type="date" id="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="airline">Airline (Optional)</label>
+                            <select id="airline">
+                                <option value="">All Airlines</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="sort">Sort By</label>
+                            <select id="sort">
+                                <option value="price">Price (Low to High)</option>
+                                <option value="duration">Duration</option>
+                                <option value="departure">Departure Time</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">Search Flights</button>
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+            <section id="results-section" class="section hidden">
+                <h2>Available Flights</h2>
+                <div id="results-container"></div>
+            </section>
+
+            <section id="booking-section" class="section hidden">
+                <h2>Complete Your Booking</h2>
+                <div id="booking-details"></div>
+                
+                <!-- Visual Seat Map -->
+                <div class="seat-selection-section">
+                    <div class="seat-count-selector">
+                        <label for="seat-count">Number of Seats:</label>
+                        <select id="seat-count" onchange="updateSeatSelection()">
+                            <option value="1">1 Seat</option>
+                            <option value="2">2 Seats</option>
+                            <option value="3">3 Seats</option>
+                            <option value="4">4 Seats</option>
+                            <option value="5">5 Seats</option>
+                            <option value="6">6 Seats</option>
+                        </select>
+                        <span class="seat-count-hint">Select how many seats you need</span>
+                    </div>
+                    <h3>Select Your Seats</h3>
+                    <div class="seat-legend">
+                        <div class="legend-item">
+                            <span class="seat-sample seat-available"></span>
+                            <span>Available</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="seat-sample seat-selected"></span>
+                            <span>Selected</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="seat-sample seat-occupied"></span>
+                            <span>Occupied</span>
+                        </div>
+                    </div>
+                    <div id="seat-map-container"></div>
+                    <div id="selected-seat-info" class="selected-seat-info hidden"></div>
+                    <div id="seat-selection-summary" class="seat-selection-summary"></div>
+                </div>
+
+                <form id="booking-form">
+                    <div class="form-group">
+                        <label for="passenger-name">Full Name</label>
+                        <input type="text" id="passenger-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="passenger-email">Email</label>
+                        <input type="email" id="passenger-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="passenger-phone">Phone Number</label>
+                        <input type="tel" id="passenger-phone" required>
+                    </div>
+                    <div class="button-group">
+                        <button type="button" class="btn btn-secondary" id="back-btn">Back to Results</button>
+                        <button type="submit" class="btn btn-primary" id="confirm-booking-btn" disabled>Confirm Booking</button>
+                    </div>
+                </form>
+            </section>
+
+            <section id="payment-section" class="section hidden">
+                <h2>Payment</h2>
+                <div id="payment-error" class="error-message hidden"></div>
+                <div id="payment-summary"></div>
+                
+                <form id="payment-form">
+                    <div class="form-group">
+                        <label>Payment Method</label>
+                        <div class="payment-methods">
+                            <label class="payment-method-card">
+                                <input type="radio" name="payment-method" value="card" checked>
+                                <div class="payment-card">
+                                    <span class="payment-icon">💳</span>
+                                    <span>Credit/Debit Card</span>
+                                </div>
+                            </label>
+                            <label class="payment-method-card">
+                                <input type="radio" name="payment-method" value="upi">
+                                <div class="payment-card">
+                                    <span class="payment-icon">📱</span>
+                                    <span>UPI</span>
+                                </div>
+                            </label>
+                            <label class="payment-method-card">
+                                <input type="radio" name="payment-method" value="netbanking">
+                                <div class="payment-card">
+                                    <span class="payment-icon">🏦</span>
+                                    <span>Net Banking</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="button" class="btn btn-secondary" id="back-to-booking-btn">Back</button>
+                        <button type="submit" class="btn btn-primary" id="process-payment-btn">Pay Now</button>
+                    </div>
+                </form>
+            </section>
+
+            <section id="confirmation-section" class="section hidden">
+                <h2>Booking Confirmed! 🎉</h2>
+                <div id="confirmation-details"></div>
+                <div class="button-group">
+                    <button class="btn btn-primary" id="download-receipt">Download Receipt</button>
+                    <button class="btn btn-secondary" id="new-search">New Search</button>
+                </div>
+            </section>
+        </section>
+    </div>
+
+    <div id="loader" class="loader hidden">
+        <div class="spinner"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

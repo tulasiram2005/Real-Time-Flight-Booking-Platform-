@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookMyFlight Admin</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .admin-container { max-width: 1200px; margin: 0 auto; }
+        .admin-header { display:flex; justify-content: space-between; align-items:center; margin: 10px 0 20px; }
+        .admin-card { background:#fff; padding:20px; border-radius:10px; box-shadow:0 5px 20px rgba(0,0,0,0.1); margin-bottom:20px; }
+        table { width:100%; border-collapse: collapse; }
+        th, td { border-bottom:1px solid #eee; padding:10px; text-align:left; }
+        th { background:#f8f9fa; }
+        .row-actions { display:flex; gap:8px; }
+        .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px; }
+        .grid .form-group { margin:0; }
+        .hidden { display:none !important; }
+        .danger { background:#dc3545; color:#fff; }
+        .success { background:#28a745; color:#fff; }
+    </style>
+    <script>
+        // Simple guard to redirect non-admins
+        document.addEventListener('DOMContentLoaded', () => {
+            const userStr = localStorage.getItem('currentUser');
+            if (!userStr) { window.location.href = '/'; return; }
+            const user = JSON.parse(userStr);
+            if (!user.is_admin) { window.location.href = '/'; return; }
+            document.getElementById('admin-user').textContent = user.name + ' (Admin)';
+        });
+    </script>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h2>✈️ BookMyFlight Admin</h2>
+            <div>
+                <span id="admin-user"></span>
+                <a href="/" class="btn btn-secondary" style="margin-left:10px;">Back to App</a>
+            </div>
+        </div>
+
+        <div class="admin-card">
+            <h3>Flights</h3>
+            <div class="grid" style="margin:10px 0;">
+                <div class="form-group">
+                    <label>Flight Number</label>
+                    <input id="new-flight-number" type="text" />
+                </div>
+                <div class="form-group">
+                    <label>Airline ID</label>
+                    <input id="new-airline-id" type="number" />
+                </div>
+                <div class="form-group">
+                    <label>Origin ID</label>
+                    <input id="new-origin-id" type="number" />
+                </div>
+                <div class="form-group">
+                    <label>Destination ID</label>
+                    <input id="new-dest-id" type="number" />
+                </div>
+                <div class="form-group">
+                    <label>Departure (ISO)</label>
+                    <input id="new-dep" type="text" placeholder="YYYY-MM-DDTHH:mm:ss" />
+                </div>
+                <div class="form-group">
+                    <label>Arrival (ISO)</label>
+                    <input id="new-arr" type="text" placeholder="YYYY-MM-DDTHH:mm:ss" />
+                </div>
+                <div class="form-group">
+                    <label>Base Price</label>
+                    <input id="new-price" type="number" step="0.01" />
+                </div>
+                <div class="form-group">
+                    <label>Total Seats</label>
+                    <input id="new-total" type="number" />
+                </div>
+                <div class="form-group">
+                    <label>Available Seats</label>
+                    <input id="new-avail" type="number" />
+                </div>
+                <div class="form-group">
+                    <label>Aircraft</label>
+                    <input id="new-aircraft" type="text" />
+                </div>
+            </div>
+            <button id="create-flight" class="btn btn-primary">Create Flight</button>
+        </div>
+
+        <div class="admin-card">
+            <h3>All Flights</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Flight</th>
+                        <th>Origin</th>
+                        <th>Destination</th>
+                        <th>Dep</th>
+                        <th>Arr</th>
+                        <th>Price</th>
+                        <th>Seats</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="flights-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        async function adminFetch(path, options = {}) {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const url = path.startsWith('http') ? path : path;
+            const headers = Object.assign({ 'Content-Type': 'application/json' }, options.headers || {});
+            // Pass admin user id for guard
+            const sep = url.includes('?') ? '&' : '?';
+            const finalUrl = url + sep + 'admin_user_id=' + encodeURIComponent(user.id);
+            const res = await fetch(finalUrl, Object.assign({}, options, { headers }));
+            if (!res.ok) throw new Error('Request failed');
+            return res.json().catch(() => ({}));
+        }
+
+        async function loadFlights() {
+            const flights = await adminFetch('/api/admin/flights');
+            const tbody = document.getElementById('flights-body');
+            tbody.innerHTML = flights.map(f => `
+                <tr>
+                    <td>${f.id}</td>
+                    <td><input data-id="${f.id}" data-field="flight_number" value="${f.flight_number}"/></td>
+                    <td><input data-id="${f.id}" data-field="origin_id" value="${f.origin_id}"/></td>
+                    <td><input data-id="${f.id}" data-field="destination_id" value="${f.destination_id}"/></td>
+                    <td><input data-id="${f.id}" data-field="departure_time" value="${f.departure_time}"/></td>
+                    <td><input data-id="${f.id}" data-field="arrival_time" value="${f.arrival_time}"/></td>
+                    <td><input data-id="${f.id}" data-field="base_price" value="${f.base_price}"/></td>
+                    <td><input data-id="${f.id}" data-field="available_seats" value="${f.available_seats}"/></td>
+                    <td class="row-actions">
+                        <button class="btn btn-primary" onclick="saveFlight(${f.id})">Save</button>
+                        <button class="btn danger" onclick="deleteFlight(${f.id})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function saveFlight(id) {
+            const inputs = document.querySelectorAll(`input[data-id='${id}']`);
+            const payload = {};
+            inputs.forEach(inp => {
+                const val = inp.value;
+                if (inp.dataset.field === 'base_price' || inp.dataset.field === 'available_seats' || inp.dataset.field === 'origin_id' || inp.dataset.field === 'destination_id') {
+                    payload[inp.dataset.field] = Number(val);
+                } else {
+                    payload[inp.dataset.field] = val;
+                }
+            });
+            await adminFetch(`/api/admin/flights/${id}`, { method:'PUT', body: JSON.stringify(payload) });
+            await loadFlights();
+        }
+
+        async function deleteFlight(id) {
+            if (!confirm('Delete this flight?')) return;
+            await adminFetch(`/api/admin/flights/${id}`, { method:'DELETE' });
+            await loadFlights();
+        }
+
+        document.getElementById('create-flight').addEventListener('click', async () => {
+            const payload = {
+                flight_number: document.getElementById('new-flight-number').value,
+                airline_id: Number(document.getElementById('new-airline-id').value),
+                origin_id: Number(document.getElementById('new-origin-id').value),
+                destination_id: Number(document.getElementById('new-dest-id').value),
+                departure_time: document.getElementById('new-dep').value,
+                arrival_time: document.getElementById('new-arr').value,
+                base_price: Number(document.getElementById('new-price').value),
+                total_seats: Number(document.getElementById('new-total').value),
+                available_seats: Number(document.getElementById('new-avail').value),
+                aircraft_type: document.getElementById('new-aircraft').value,
+            };
+            await adminFetch('/api/admin/flights', { method:'POST', body: JSON.stringify(payload) });
+            await loadFlights();
+        });
+
+        loadFlights();
+    </script>
+</body>
+</html>
+
