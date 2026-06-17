@@ -34,6 +34,19 @@ The system mimics real airline booking workflows, including flight search, dynam
 
 ---
 
+## Vercel Live Demo
+
+The repository root includes Vercel configuration for a static browser demo of the simulator. It preserves the main booking experience using `frontend/demo-api.js`, which supplies realistic in-browser data for auth, flights, seats, bookings, payments, and admin management.
+
+```bash
+npm run dev
+npm run build
+```
+
+Use `demo@bookmyflight.com` / `demo123` for the traveller flow and `admin@bookmyflight.com` / `admin123` for the admin demo.
+
+---
+
 ## Features
 
 ### 🛫 Core Functionality

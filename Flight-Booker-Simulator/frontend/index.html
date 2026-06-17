@@ -3,16 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BookMyFlight - Flight Booking Simulator</title>
+    <meta name="description" content="A real-time flight booking platform demo with dynamic pricing, seat selection, payment, PNR confirmation, and receipt download.">
+    <title>SkyReserve | Real-Time Flight Booking Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>✈️ BookMyFlight</h1>
-            <p class="subtitle">Book your flight with dynamic pricing</p>
-            <div style="text-align:right; margin-top:10px;">
+            <div class="brand-row">
+                <div class="brand-lockup">
+                    <span class="brand-mark">SR</span>
+                    <span>
+                        <strong>SkyReserve</strong>
+                        <small>Real-time booking platform</small>
+                    </span>
+                </div>
                 <a id="admin-link" href="/admin" class="btn btn-secondary hidden">Admin</a>
+            </div>
+            <div class="hero-shell">
+                <div class="hero-copy">
+                    <span class="eyebrow">Dynamic pricing • Live seats • Instant PNR</span>
+                    <h1>Book flights with real-time fares and visual seat selection</h1>
+                    <p class="subtitle">Search routes, compare live demand-based prices, reserve seats, process demo payments, and generate clean booking receipts from one polished workflow.</p>
+                    <div class="hero-stats" aria-label="Platform highlights">
+                        <span><strong>8</strong> demo routes</span>
+                        <span><strong>144+</strong> mapped seats</span>
+                        <span><strong>PNR</strong> receipt flow</span>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -223,6 +244,7 @@
         <div class="spinner"></div>
     </div>
 
+    <script src="demo-api.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="script.js"></script>
 </body>

@@ -872,7 +872,7 @@ function showConfirmation(bookings) {
     const qrCodesHTML = bookingsArray.map(b => `
         <div class="qrcode-ticket">
             <div class="qrcode-container">
-                <img src="/api/bookings/${b.id}/qrcode" alt="QR Code" class="qrcode-image">
+                <img src="${b.qr_code || `/api/bookings/${b.id}/qrcode`}" alt="QR Code" class="qrcode-image">
             </div>
             <div class="ticket-info">
                 <div class="ticket-pnr">PNR: ${b.pnr}</div>
